@@ -2,19 +2,19 @@ import pandas as pd
 import numpy as np
 
 
-#READ IN YESTERYDA'S SPENDS, BUDGET SETTINGS, AND TRADER LOOKUP
+#READ IN YESTERDAY'S SPENDS, BUDGET SETTINGS, AND TRADER LOOKUP
 spends=pd.read_csv('144170621.csv', sep=',',header=0, encoding='latin-1') 
 lisettings= pd.read_csv('line_items.csv', sep=',',header=0, encoding='latin-1')
 traders=pd.read_csv('gmt_traders.csv', sep=',',header=0, encoding='latin-1')
 
 ydaygmt=pd.read_csv('ydaygmt.csv', sep=',',header=0, encoding='latin-1')
 
-#PIVOT SPENDS AND SUM COST
+#PIVOT SPENDS AND SUM MEDIA COSTS
 ioSpends = pd.pivot_table(spends, values=['Total Media Cost (Advertiser Currency)'], 
 	index=['Insertion Order'], aggfunc=np.sum)
 
 
-#TURN PIVOT INTO DF, RESET INDEX TO HAVE IO NAME AS A COLUMN, NAME COLUMNS
+#TURN PIVOT INTO DATAFRAME, RESET INDEX TO HAVE IO NAME AS A COLUMN, NAME COLUMNS
 ioSpends = pd.DataFrame(data=ioSpends)
 ioSpends.reset_index(level=0, inplace=True)
 ioSpends.columns=['Insertion Order', 'Total Media Cost']
@@ -31,7 +31,7 @@ ioBudgets.columns=['Insertion Order', 'Budget']
 #MERGE SPENDS AND BUDGETS BASED ON IO NAME
 allIO = ioSpends.merge(ioBudgets, on='Insertion Order', how='left')
 
-#CREATE IO HIT CAP FIELD 
+#CREATE IO HIT CAP COLUMN 
 allIO['hitCap'] = allIO.values[:,1]>=allIO.values[:,2]
 
 #CREATE CAPPED IOS DF
